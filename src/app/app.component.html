@@ -1,28 +1,89 @@
-<h1>Game Catalog</h1>
+<header>
+  <h1>Game Catalog</h1>
+</header>
 
-<div class="buscador">
-  <label>
-    Buscar videojuego por ID:
-    <input #idInput type="text" placeholder="Ej: 5">
-  </label>
-  <button (click)="buscarPorId(idInput.value)">Buscar</button>
-</div>
+<section class="filtros">
+  <div class="fila">
+    <label>
+      Buscar título:
+      <input #titleInput type="text" placeholder="Ej: Racing">
+    </label>
+    <button (click)="onSearch(titleInput.value)">Buscar</button>
+  </div>
+
+  <div class="fila">
+    <label>
+      Género:
+      <select #genreSelect (change)="onGenreChange(genreSelect.value)">
+        <option value="">Todos</option>
+        <option value="Action">Action</option>
+        <option value="Adventure">Adventure</option>
+        <option value="RPG">RPG</option>
+        <option value="Racing">Racing</option>
+        <option value="Simulation">Simulation</option>
+        <option value="Sports">Sports</option>
+        <option value="Strategy">Strategy</option>
+      </select>
+    </label>
+
+    <label>
+      Plataforma:
+      <select #platformSelect (change)="onPlatformChange(platformSelect.value)">
+        <option value="">Todas</option>
+        <option value="PC">PC</option>
+        <option value="PlayStation">PlayStation</option>
+        <option value="Xbox">Xbox</option>
+        <option value="Switch">Switch</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="fila">
+    <label>
+      Precio:
+      <input #minInput type="number" placeholder="mínimo">
+    </label>
+    <span>—</span>
+    <input #maxInput type="number" placeholder="máximo">
+    <button (click)="onPriceFilter(minInput.value, maxInput.value)">Filtrar</button>
+  </div>
+
+  <div class="fila">
+    <label>
+      Buscar por ID:
+      <input #idInput type="text" placeholder="Ej: 5">
+    </label>
+    <button (click)="buscarPorId(idInput.value)">Buscar</button>
+  </div>
+</section>
 
 @if (selectedGame) {
-  <div class="game seleccionado">
+  <section class="seleccionado">
+    <span class="etiqueta">Resultado por ID</span>
     <h3>{{ selectedGame.title }}</h3>
     <p>{{ selectedGame.genre }} · {{ selectedGame.platform }}</p>
-    <p>{{ selectedGame.price }} €</p>
+    <p class="precio">{{ selectedGame.price }} €</p>
+  </section>
+}
+
+<section class="listado">
+  @for (game of games; track game.id) {
+    <article class="game">
+      <h3>{{ game.title }}</h3>
+      <p>{{ game.genre }} · {{ game.platform }}</p>
+      <p class="precio">{{ game.price }} €</p>
+    </article>
+  } @empty {
+    <p class="vacio">No se han encontrado videojuegos.</p>
+  }
+</section>
+
+@if (totalPages > 0) {
+  <div class="paginacion">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+    <span>Página {{ currentPage }} de {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage >= totalPages">Siguiente</button>
   </div>
 }
 
-<!-- Paso 8: listado completo -->
-@for (game of games; track game.id) {
-  <div class="game">
-    <h3>{{ game.title }}</h3>
-    <p>{{ game.genre }} · {{ game.platform }}</p>
-    <p>{{ game.price }} €</p>
-  </div>
-} @empty {
-  <p>No se han encontrado videojuegos.</p>
-}
+<p class="total">Registros encontrados: {{ totalItems }}</p>
