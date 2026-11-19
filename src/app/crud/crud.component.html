@@ -1,121 +1,129 @@
 <h2>Gestión de videojuegos</h2>
 
-<form #gameForm="ngForm" (ngSubmit)="onSaveGame(gameForm)" novalidate>
+<form [formGroup]="gameForm" #form="ngForm" (ngSubmit)="onSaveGame(form)" novalidate>
 
-    <div>
-        <label for="titleId">Título:</label>
-        @let invalidTitle = title.invalid && (title.touched || title.dirty || gameForm.submitted);
-        <input id="titleId" type="text" name="title" [(ngModel)]="game.title" required minlength="3" maxlength="40"
-            #title="ngModel" [class.invalid-control]="invalidTitle">
-        @if (invalidTitle) {
-        @if (title.errors?.['required']) {
-        <p class="error">El título es obligatorio.</p>
-        }
-        @if (title.errors?.['minlength']) {
-        <p class="error">El título debe tener al menos 3 caracteres.</p>
-        }
-        @if (title.errors?.['maxlength']) {
-        <p class="error">El título no puede superar 40 caracteres.</p>
-        }
-        }
-    </div>
+  <div>
+    <label for="title">Título:</label>
+    <input id="title" type="text" formControlName="title"
+      [class.invalid]="gameForm.controls.title.invalid &&
+        (gameForm.controls.title.touched || form.submitted)">
 
-    <div>
-        <label for="genreId">Género:</label>
-        @let invalidGenre = genre.invalid && (genre.touched || genre.dirty || gameForm.submitted);
-        <select id="genreId" name="genre" [(ngModel)]="game.genre" required #genre="ngModel"
-            [class.invalid-control]="invalidGenre">
-            <option value="">Selecciona un género</option>
-            <option value="Platform">Platform</option>
-            <option value="Strategy">Strategy</option>
-            <option value="Racing">Racing</option>
-            <option value="RPG">RPG</option>
-            <option value="Action">Action</option>
-            <option value="Adventure">Adventure</option>
-            <option value="Simulation">Simulation</option>
-            <option value="Sports">Sports</option>
-        </select>
-        @if (invalidGenre) {
-        <p class="error">Debes seleccionar un género.</p>
-        }
-    </div>
+    @if (gameForm.controls.title.invalid &&
+          (gameForm.controls.title.touched || form.submitted)) {
+      @if (gameForm.controls.title.hasError('required')) {
+        <small class="error">El título es obligatorio.</small>
+      } @else if (gameForm.controls.title.hasError('minlength')) {
+        <small class="error">Escribe al menos 3 caracteres.</small>
+      }
+    }
+  </div>
 
-    <div>
-        <label for="platformId">Plataforma:</label>
-        @let invalidPlatform = platform.invalid && (platform.touched || platform.dirty || gameForm.submitted);
-        <select id="platformId" name="platform" [(ngModel)]="game.platform" required #platform="ngModel"
-            [class.invalid-control]="invalidPlatform">
-            <option value="">Selecciona una plataforma</option>
-            <option value="PC">PC</option>
-            <option value="PlayStation">PlayStation</option>
-            <option value="Xbox">Xbox</option>
-            <option value="Switch">Switch</option>
-        </select>
-        @if (invalidPlatform) {
-        <p class="error">Debes seleccionar una plataforma.</p>
-        }
-    </div>
+  <div>
+    <label for="genre">Género:</label>
+    <select id="genre" formControlName="genre"
+      [class.invalid]="gameForm.controls.genre.invalid &&
+        (gameForm.controls.genre.touched || form.submitted)">
+      <option value="">Selecciona un género</option>
+      <option value="Platform">Platform</option>
+      <option value="Strategy">Strategy</option>
+      <option value="Racing">Racing</option>
+      <option value="RPG">RPG</option>
+      <option value="Action">Action</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Simulation">Simulation</option>
+      <option value="Sports">Sports</option>
+    </select>
 
-    <div>
-        <label for="priceId">Precio:</label>
-        @let invalidPrice = price.invalid && (price.touched || price.dirty || gameForm.submitted);
-        <input id="priceId" type="number" name="price" [(ngModel)]="game.price" required min="0.01" max="100"
-            #price="ngModel" [class.invalid-control]="invalidPrice">
-        @if (invalidPrice) {
-        @if (price.errors?.['required']) {
-        <p class="error">El precio es obligatorio.</p>
-        }
-        @if (price.errors?.['min']) {
-        <p class="error">El precio debe ser superior a 0.</p>
-        }
-        @if (price.errors?.['max']) {
-        <p class="error">El precio no puede superar 100 €.</p>
-        }
-        }
-    </div>
+    @if (gameForm.controls.genre.invalid &&
+          (gameForm.controls.genre.touched || form.submitted)) {
+      @if (gameForm.controls.genre.hasError('required')) {
+        <small class="error">Selecciona un género.</small>
+      }
+    }
+  </div>
 
-    <div>
-        <label for="stockId">Stock:</label>
-        @let invalidStock = stock.invalid && (stock.touched || stock.dirty || gameForm.submitted);
-        <input id="stockId" type="number" name="stock" [(ngModel)]="game.stock" required min="0" max="999"
-            #stock="ngModel" [class.invalid-control]="invalidStock">
-        @if (invalidStock) {
-        @if (stock.errors?.['required']) {
-        <p class="error">El stock es obligatorio.</p>
-        }
-        @if (stock.errors?.['min']) {
-        <p class="error">El stock no puede ser negativo.</p>
-        }
-        @if (stock.errors?.['max']) {
-        <p class="error">El stock no puede superar 999.</p>
-        }
-        }
-    </div>
+  <div>
+    <label for="platform">Plataforma:</label>
+    <select id="platform" formControlName="platform"
+      [class.invalid]="gameForm.controls.platform.invalid &&
+        (gameForm.controls.platform.touched || form.submitted)">
+      <option value="">Selecciona una plataforma</option>
+      <option value="PC">PC</option>
+      <option value="PlayStation">PlayStation</option>
+      <option value="Xbox">Xbox</option>
+      <option value="Switch">Switch</option>
+    </select>
 
-    <button type="submit">
-        @if (game.id) {
-        Actualizar
-        } @else {
-        Crear
-        }
-    </button>
-    <button type="button" (click)="cancelEdit(gameForm)">Cancelar</button>
+    @if (gameForm.controls.platform.invalid &&
+          (gameForm.controls.platform.touched || form.submitted)) {
+      @if (gameForm.controls.platform.hasError('required')) {
+        <small class="error">Selecciona una plataforma.</small>
+      }
+    }
+  </div>
+
+  <div>
+    <label for="price">Precio:</label>
+    <input id="price" type="number" formControlName="price" step="0.01"
+      [class.invalid]="gameForm.controls.price.invalid &&
+        (gameForm.controls.price.touched || form.submitted)">
+
+    @if (gameForm.controls.price.invalid &&
+          (gameForm.controls.price.touched || form.submitted)) {
+      @if (gameForm.controls.price.hasError('required')) {
+        <small class="error">El precio es obligatorio.</small>
+      } @else if (gameForm.controls.price.hasError('min')) {
+        <small class="error">El precio debe ser superior a cero.</small>
+      }
+    }
+  </div>
+
+  <div>
+    <label for="stock">Stock:</label>
+    <input id="stock" type="number" formControlName="stock" step="1"
+      [class.invalid]="gameForm.controls.stock.invalid &&
+        (gameForm.controls.stock.touched || form.submitted)">
+
+    @if (gameForm.controls.stock.invalid &&
+          (gameForm.controls.stock.touched || form.submitted)) {
+      @if (gameForm.controls.stock.hasError('required')) {
+        <small class="error">El stock es obligatorio.</small>
+      } @else if (gameForm.controls.stock.hasError('min')) {
+        <small class="error">El stock no puede ser negativo.</small>
+      } @else if (gameForm.controls.stock.hasError('pattern')) {
+        <small class="error">El stock debe ser un número entero.</small>
+      }
+    }
+  </div>
+
+  @if (gameForm.invalid && gameForm.dirty) {
+    <p class="error">Existen campos pendientes de corregir.</p>
+  }
+  @if (gameForm.valid && gameForm.dirty) {
+    <p class="ok">Formulario preparado para guardar.</p>
+  }
+
+  <button type="submit">
+    @if (editId) {
+      Actualizar videojuego
+    } @else {
+      Guardar videojuego
+    }
+  </button>
+  <button type="button" (click)="limpiar(form)">Limpiar</button>
 </form>
+
+@if (message) {
+  <p class="ok">{{ message }}</p>
+}
 
 <h2>Videojuegos</h2>
 
 @for (g of games; track g.id) {
-<div class="item">
+  <div class="item">
     <span>{{ g.title }} · {{ g.genre }} · {{ g.platform }} · {{ g.price }} € · Stock {{ g.stock }}</span>
     <button type="button" (click)="editGame(g)">Editar</button>
-</div>
+  </div>
 } @empty {
-<p>No hay videojuegos.</p>
-}
-
-@if (gameForm.invalid && gameForm.dirty) {
-<p class="error">Existen campos pendientes de corregir.</p>
-}
-@if (gameForm.valid && gameForm.dirty) {
-<p class="ok">Formulario preparado para guardar.</p>
+  <p>No hay videojuegos.</p>
 }
