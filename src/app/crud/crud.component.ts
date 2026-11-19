@@ -1,66 +1,92 @@
 import { Component, inject } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, FormGroupDirective, Validators } from '@angular/forms';
 import { GameService } from '../services/game.service';
 import { Game } from '../models/game';
 
 @Component({
   selector: 'app-crud',
-  imports: [FormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './crud.component.html',
   styleUrl: './crud.component.css'
 })
 export class CrudComponent {
-  game: Game = {
-    title: '',
-    genre: '',
-    platform: '',
-    price: 0,
-    stock: 0
-  };
+  gameForm = new FormGroup({
+    title: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3)]
+    }),
+    genre: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required]
+    }),
+    platform: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required]
+    }),
+    price: new FormControl(0, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(0.01)]
+    }),
+    stock: new FormControl(0, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]
+    })
+  });
   games: Game[] = [];
+  editId: number | undefined;
+  message = '';
+  isError = false;
   private gameService = inject(GameService);
-
-  onSaveGame(form: NgForm) {
-    if (form.invalid) {
-      return;
-    }
-
-    const request = this.game.id ? this.gameService.updateGame(this.game)
-      : this.gameService.createGame(this.game);
-
-    request.subscribe(() => {
-      this.loadGames();
-      this.game = this.emptyGame();
-      form.resetForm(this.game);
-    });
-  }
-
-  emptyGame(): Game {
-    return {
-      title: '',
-      genre: '',
-      platform: '',
-      price: 0,
-      stock: 0
-    };
-  }
 
   ngOnInit(): void {
     this.loadGames();
   }
 
-  loadGames() {
-    this.gameService.getGames().subscribe(game => {
-      this.games = game;
-    })
+  loadGames(): void {
+    this.gameService.getGames().subscribe((games: Game[]) => {
+      this.games = games;
+    });
+  }
+
+  onSaveGame(form: FormGroupDirective): void {
+    this.gameForm.markAllAsTouched();
+
+    if (this.gameForm.invalid) {
+      return;
+    }
+
+    const value = this.gameForm.getRawValue();
+
+    const request = this.editId
+      ? this.gameService.updateGame({ ...value, id: this.editId })
+      : this.gameService.createGame(value);
+
+    request.subscribe({
+      next: () => {
+        this.isError = false;
+        this.message = this.editId
+          ? 'Videojuego actualizado correctamente.'
+          : 'Videojuego creado correctamente.';
+        this.loadGames();
+        form.resetForm();
+        this.editId = undefined;
+      },
+      error: () => {
+        this.isError = true;
+        this.message = 'No se pudo guardar el videojuego. Revisa que JSON Server esté arrancado.';
+      }
+    });
   }
 
   editGame(game: Game): void {
-    this.game = { ...game };
+    this.message = '';
+    this.editId = game.id;
+    this.gameForm.patchValue(game);
   }
 
-  cancelEdit(form: NgForm): void {
-  this.game = this.emptyGame();
-  form.resetForm(this.game);
-}
+  limpiar(form: FormGroupDirective): void {
+    this.message = '';
+    form.resetForm();
+    this.editId = undefined;
+  }
 }
