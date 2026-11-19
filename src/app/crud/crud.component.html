@@ -113,9 +113,7 @@
   <button type="button" (click)="limpiar(form)">Limpiar</button>
 </form>
 
-@if (message) {
-  <p class="ok">{{ message }}</p>
-}
+<p [class.ok]="!isError" [class.error]="isError">{{ message }}</p>
 
 <h2>Videojuegos</h2>
 

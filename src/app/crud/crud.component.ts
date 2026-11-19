@@ -35,6 +35,7 @@ export class CrudComponent {
   games: Game[] = [];
   editId: number | undefined;
   message = '';
+  isError = false;
   private gameService = inject(GameService);
 
   ngOnInit(): void {
@@ -76,11 +77,13 @@ export class CrudComponent {
   }
 
   editGame(game: Game): void {
+    this.message = '';
     this.editId = game.id;
     this.gameForm.patchValue(game);
   }
 
   limpiar(form: FormGroupDirective): void {
+    this.message = '';
     form.resetForm();
     this.editId = undefined;
   }
