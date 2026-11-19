@@ -1,8 +1,12 @@
-input.invalid, select.invalid, textarea.invalid {
-  border: 2px solid #bf4040;
+.invalid-control {
+    border: 2px solid red;
 }
 
 .error {
-  color: #a52e2e;
-  font-size: 0.9rem;
+    color: red;
+    margin: 0.2rem 0;
+}
+
+.ok {
+    color: green;
 }
