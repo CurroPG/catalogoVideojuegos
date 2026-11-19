@@ -43,7 +43,7 @@ export class CrudComponent {
   }
 
   loadGames(): void {
-    this.gameService.getGames().subscribe(games => {
+    this.gameService.getGames().subscribe((games: Game[]) => {
       this.games = games;
     });
   }
@@ -63,6 +63,7 @@ export class CrudComponent {
 
     request.subscribe({
       next: () => {
+        this.isError = false;
         this.message = this.editId
           ? 'Videojuego actualizado correctamente.'
           : 'Videojuego creado correctamente.';
@@ -71,6 +72,7 @@ export class CrudComponent {
         this.editId = undefined;
       },
       error: () => {
+        this.isError = true;
         this.message = 'No se pudo guardar el videojuego. Revisa que JSON Server esté arrancado.';
       }
     });
